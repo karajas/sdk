@@ -14,10 +14,10 @@ if not exist "%DeveloperCommandPrompt%" (
   echo Visit this page to download:
   echo.
   echo https://go.microsoft.com/fwlink/?LinkId=691978^&clcid=0x409
-  exit /b 1
+  echo.
+  echo "Continuing build using dotnet instead."
+  goto :SkipDeveloperSetup
 )
-
-call "%DeveloperCommandPrompt%" || goto :BuildFailed
 
 :SkipDeveloperSetup
 powershell -NoProfile -NoLogo -ExecutionPolicy Bypass -Command "& \"%~dp0build.ps1\" %*; exit $LastExitCode;"

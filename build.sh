@@ -18,6 +18,7 @@ DOTNET_CLI_VERSION="$(cat "$REPOROOT/DotnetCLIVersion.txt")"
 
 CONFIGURATION="Debug"
 PLATFORM="Any CPU"
+SKIP_TESTS=false
 
 args=( "$@" )
 
@@ -36,6 +37,10 @@ while [[ $# > 0 ]]; do
             args=( "${args[@]/$2}" )
             shift
             ;;        
+        --skip-tests)
+            SKIP_TESTS=true
+            args=( "${args[@]/$1}" )
+            ;;   
         --help)
             echo "Usage: $0 [--configuration <CONFIGURATION>] [--platform <PLATFORM>] [--help]"
             echo ""
@@ -77,4 +82,8 @@ export PATH="$DOTNET_INSTALL_DIR:$PATH"
 # Disable first run since we want to control all package sources
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 
-dotnet msbuild $REPOROOT/build/build.proj /m:1 /nologo /p:Configuration=$CONFIGURATION /p:Platform="$PLATFORM" "${args[@]}"
+if [[ "$SKIP_TESTS" = true ]]; then
+    dotnet msbuild $REPOROOT/build/build.proj /t:BuildWithoutTesting /m:1 /nologo /p:Configuration=$CONFIGURATION /p:Platform="$PLATFORM" "${args[@]}"
+else
+    dotnet msbuild $REPOROOT/build/build.proj /m:1 /nologo /p:Configuration=$CONFIGURATION /p:Platform="$PLATFORM" "${args[@]}"
+fi
